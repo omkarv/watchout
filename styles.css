@@ -3,8 +3,25 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 .gameboard {
-  background: url(sky.png);
+  margin: 0 auto;
+  /*background: url(sky.png);*/
+  /*background-color: black;*/
   width: 800px;
   height: 600px;
   background-repeat: no-repeat;
 }
+
+body {
+  background-image: url(sky.jpg);
+}
+
+.scoreboard {
+  font-size: 24px;
+  color: white;
+
+}
+
+.currentScore {
+  margin: 0 auto;
+}
+
