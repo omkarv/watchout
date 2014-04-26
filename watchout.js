@@ -1,9 +1,14 @@
 // start slingin' some d3 here.
 (function() {
+
+  var x;
+  var y;
   var gameOptions = {
     width : '800',
     height: '600',
-    noEnemies: 30
+    noEnemies: 10,
+    collisions: 0,
+    high: 0
   };
 
   var gameScore = {
@@ -71,11 +76,41 @@
       .attr('y', function(d) { return setXY(gameOptions.height);});
   };
 
+  var negate = function(num) {
+    if(num < 0) {
+      return num * -1;
+    } else {
+      return num;
+    }
+
+  };
+
   setInterval(function(){ update();}, 2000);
 
 
   setInterval(function () {
     d3.select('.current span').text(gameScore.currentScore++);
+
+  //collision detection
+  // Player x, y on drag positions available in the x, y variables defined above
+  var enemyArray = d3.selectAll('.enemy')[0];
+  for(var enemy = 0; enemy < enemyArray.length; enemy++) {
+    var enemyX = enemyArray[enemy].x.animVal.value;
+    var enemyY = enemyArray[enemy].y.animVal.value;
+
+    var diffX = enemyX - x;
+    var diffY = enemyY - y;
+
+    if ((negate(diffX)<20) && (negate(diffY)<20)) {
+      if (gameOptions.high < gameScore.currentScore) {
+        gameOptions.high = gameScore.currentScore;
+        d3.select('.high span').text(gameOptions.high);
+        gameScore.currentScore = 0;
+      }
+      d3.select('.collisions span').text(gameOptions.collisions++);
+    }
+  }
+
   }, 50);
 
 }).call(this);
