@@ -39,24 +39,48 @@
                     .attr('transform', function (d) { return 'translate(' + d + ')'; })
                     .call(drag);
 
+  var generateArc = function(start, end, inner, outer) {
+   return d3.svg.arc()
+    .innerRadius(35)
+    .outerRadius(60)
+    .startAngle(start)
+    .endAngle(end);
+  };
   // initialise a counter for the high score
   var scoreboard = d3.select('.scoreboard').append('svg')
-                    .attr('width', '100')
-                    .attr('height', '120');
+                    .attr('width', '120')
+                    .attr('height', '120').text('score');
 
-  var currentScore = d3.svg.arc()
-                      .innerRadius(40)
-                      .outerRadius(50)
-                      .startAngle(1)
-                      .endAngle(Math.PI * 2);
+  var currentScore =  d3.svg.arc()
+    .innerRadius(40)
+    .outerRadius(65)
+    .startAngle(0)
+    .endAngle(Math.PI);
+
+  var highScore =  d3.svg.arc()
+    .innerRadius(0)
+    .outerRadius(30)
+    .startAngle(0)
+    .endAngle(Math.PI/20);//generateArc(1, Math.PI*2);
+
+
 
   scoreboard.append('path') // defines the initial moving transition
       .attr('d', currentScore)
       .attr('class', '.currentScore')
       .attr('transform', 'translate(50,60)')
       .style({
-        fill: '#00FFFF',
-        opacity: '0.85'
+        fill: 'orange',
+        opacity: '0.95'
+      });
+
+  scoreboard.append('path') // defines the initial moving transition
+      .attr('d', highScore)
+      .attr('class', '.highScore')
+      .attr('transform', 'translate(50,60)')
+      .style({
+        fill: '#CC33FF',
+        opacity: '0.95'
       });
 
   var enemyArr = function (arr) {
@@ -88,12 +112,16 @@
       .attr('x', function(d) { return setXY(gameOptions.width);})
       .attr('y', function(d) { return setXY(gameOptions.height);})
       .each('end', function(){update();});
+
+      d3.select("path")
+        .transition()
+        .attr('d', generateArc(0, gameScore.currentScore/500));
   };
 
 
   var collisionDetection = function () {
     d3.select('.current span').text(gameScore.currentScore++); // increment score on each call of game loop
-    currentScore.endAngle(Math.PI*Math.random());
+    //currentScore.endAngle(Math.PI*Math.random());
   //collision detection
   // Player x, y on drag positions available in the x, y variables defined above
     var enemyArray = d3.selectAll('.enemy')[0];
@@ -109,6 +137,10 @@
         player.transition().attr('transform', function (d) { return 'translate(' + 200 + ')'; });
         if (gameOptions.high < gameScore.currentScore) {
           gameOptions.high = gameScore.currentScore;
+          d3.select(".highScore")
+          .transition()
+          .attr('d', generateArc(0, gameOptions.high/500));
+
           d3.select('.high span').text(gameOptions.high);
             //.transition.duration(2000);
           gameScore.currentScore = 0;
